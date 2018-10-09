@@ -67,7 +67,6 @@ int main(void)
    while(1)
    {
     UART_tx_str("Hello world!\n");
-    UART_tx_str("Hello world!\n");
     _delay_ms(100);
    }
 

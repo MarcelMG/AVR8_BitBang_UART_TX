@@ -2,6 +2,7 @@
     for Attiny24A/44A/84A using the internal 8MHz oscillator as clock source
 
     (c) 2018 Marcel Meyer-Garcia
+    see LICENCE.txt
  */
 
  /* NOTE: since the internal 8MHz oscillator is not very accurate, the value for OCR0A can be tuned

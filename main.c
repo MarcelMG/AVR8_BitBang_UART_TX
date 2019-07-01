@@ -24,13 +24,13 @@ volatile uint16_t tx_shift_reg = 0;
 
 void UART_tx(char character)
 {
+   uint16_t local_tx_shift_reg = tx_shift_reg;
    //if sending the previous character is not yet finished, return
    //transmission is finished when tx_shift_reg == 0
-   if(tx_shift_reg){return;}
-   //fill the TX shift register witch the character to be sent and the start & stop bits
-   tx_shift_reg = (character<<1);
-   tx_shift_reg &= ~(1<<0); //start bit
-   tx_shift_reg |= (1<<9); //stop bit
+   if(local_tx_shift_reg){return;}
+   //fill the TX shift register witch the character to be sent and the start & stop bits (start bit (1<<0) is already 0)
+   local_tx_shift_reg = (character<<1) | (1<<9); //stop bit (1<<9)
+   tx_shift_reg = local_tx_shift_reg;
    //start timer0 with a prescaler of 8
    TCCR0B = (1<<CS01);
 }
@@ -77,8 +77,9 @@ int main(void)
 //timer0 compare A match interrupt
 ISR(TIM0_COMPA_vect )
 {
+   uint16_t local_tx_shift_reg = tx_shift_reg;
    //output LSB of the TX shift register at the TX pin
-   if( tx_shift_reg & 0x01 )
+   if( local_tx_shift_reg & 0x01 )
    {
       TX_PORT |= (1<<TX_PIN);
    }
@@ -87,10 +88,11 @@ ISR(TIM0_COMPA_vect )
       TX_PORT &=~ (1<<TX_PIN);
    }
    //shift the TX shift register one bit to the right
-   tx_shift_reg = (tx_shift_reg >> 1);
+   local_tx_shift_reg >>= 1;
+   tx_shift_reg = local_tx_shift_reg;
    //if the stop bit has been sent, the shift register will be 0
    //and the transmission is completed, so we can stop & reset timer0
-   if(!tx_shift_reg)
+   if(!local_tx_shift_reg)
    {
       TCCR0B = 0;
       TCNT0 = 0;

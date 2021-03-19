@@ -50,12 +50,20 @@ void UART_init(){
    //set timer0 to CTC mode
    TCCR0A = (1<<WGM01);
    //enable output compare 0 A interrupt
-   TIMSK0 |= (1<<OCF0A);
+
+#ifdef TIMSK0
+   TIMSK0 |= (1<<OCIE0A);
+#else
+	TIMSK |= (1<<OCIE0A);
+#endif
    //set compare value to 103 to achieve a 9600 baud rate (i.e. 104µs)
    //together with the 8MHz/8=1MHz timer0 clock
    /*NOTE: since the internal 8MHz oscillator is not very accurate, this value can be tuned
      to achieve the desired baud rate, so if it doesn't work with the nominal value (103), try
      increasing or decreasing the value by 1 or 2 */
+
+
+	//OCR0A = F_CPU /(Baud * 8)
    OCR0A = 103;
    //enable interrupts
    sei();

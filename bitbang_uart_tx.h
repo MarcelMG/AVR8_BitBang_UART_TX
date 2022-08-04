@@ -17,31 +17,31 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-#ifndef SOFT_UART_TX_H_   /* Include guard */
-#define SOFT_UART_TX_H_
+#ifndef BBUART_TX_H_   /* Include guard */
+#define BBUART_TX_H_
 
 // On USBASP this is the JP1 _or_ PIN5/reset on the header
-#define TX_PORT PORTB 
-#define TX_PIN  PB2
-#define TX_DDR  DDRB
-#define TX_DDR_PIN DDB2
+#define BBUART_TX_PORT PORTB 
+#define BBUART_TX_PIN  PB2
+#define BBUART_TX_DDR  DDRB
+#define BBUART_TX_DDR_PIN DDB2
 
 volatile uint16_t tx_shift_reg;
 
-/** @brief Called to initialize tiny UART.
+/** @brief Called to initialize the BitBang UART (BBUART).
  * 
  * Sets the TX pin to output and configures Atmega8 Timer2 to 9600 8n1.
  * The timer setup assumes 12 MHz clock. Finally, interrupts are enabled
  * with AVR sei()-call in the end.
  */
-static void init_tiny_uart();
+void BBUART_init();
 
 /** @brief Transmits one 8-bit character via UART pin.
  *  @param character to transmit.
  *  @return The number of characters send.
  *           If 0, previous trasmit has not ended and the attempt is aborted.
 */
-static uint8_t UART_tx(char character);
+uint8_t BBUART_tx(char character);
 /** @brief Transmits the given null-terminated string.
  * 
  *  Note that this is a blocking operation that returns when the entire
@@ -49,6 +49,6 @@ static uint8_t UART_tx(char character);
  * 
  *  @param string to transmit. 
  */
-static void UART_tx_str(char* string);
+void BBUART_tx_str(char* string);
 
-#endif // SOFT_UART_TX_H_
+#endif // BBUART_TX_H_

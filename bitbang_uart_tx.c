@@ -19,10 +19,10 @@
 
 volatile uint16_t tx_shift_reg = 0;
 
-static void init_tiny_uart(){
+void BBUART_init(){
    //set TX pin as output
-   TX_DDR |= (1<<TX_DDR_PIN);
-   TX_PORT |= (1<<TX_PIN);
+   BBUART_TX_DDR |= (1<<BBUART_TX_DDR_PIN);
+   BBUART_TX_PORT |= (1<<BBUART_TX_PIN);
    // Use I/O clock
    ASSR = 0;
    //set prescaler to 8 and set timer to CTC mode
@@ -45,11 +45,11 @@ ISR(TIMER2_COMP_vect)
    //output LSB of the TX shift register at the TX pin
    if( tx_shift_reg & 0x01 )
    {
-      TX_PORT |= (1<<TX_PIN);
+      BBUART_TX_PORT |= (1<<BBUART_TX_PIN);
    }
    else
    {
-      TX_PORT &=~ (1<<TX_PIN);
+      BBUART_TX_PORT &=~ (1<<BBUART_TX_PIN);
    }
    //shift the TX shift register one bit to the right
    tx_shift_reg = (tx_shift_reg >> 1);
@@ -62,7 +62,7 @@ ISR(TIMER2_COMP_vect)
    }
 }
 
-static uint8_t UART_tx(char character)
+uint8_t BBUART_tx(char character)
 {
    // If sending the previous character is not yet finished, return
    //  (transmission is finished when tx_shift_reg == 0)
@@ -76,11 +76,11 @@ static uint8_t UART_tx(char character)
    return 1;
 }
 
- void UART_tx_str(char* string){
+ void BBUART_tx_str(char* string){
    while( *string ){
       //wait until previous transmission is finished
       while(tx_shift_reg);
-      UART_tx( *string++ );
+      BBUART_tx( *string++ );
     }
     while(tx_shift_reg);
 }

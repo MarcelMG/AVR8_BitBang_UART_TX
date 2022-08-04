@@ -1,16 +1,9 @@
 /**
-  Software ("bit-bang") UART Transmitter (8 data bits, 1 stop bit, no parity)
+  @brief Software ("bit-bang") UART Transmitter (8 data bits, 1 stop bit, no parity)
     for Attiny24A/44A/84A using the internal 8MHz oscillator as clock source
-    (c) 2018 Marcel Meyer-Garcia
-    see LICENCE.txt 
-    
-    in
-    https://github.com/MarcelMG/AVR8_BitBang_UART_TX 
-    which says MIT Licensed,
-    
-    adapted for USBASP/atmega8 by
-    (c) 2022 Jussi Rasku 
-    and added this header and documentation while at it.
+    (c) 2018 @author Marcel Meyer-Garcia
+    (c) 2022 @author Jussi Rasku
+    see LICENCE.txt
  **/ 
 
 #include <stdint.h>
@@ -42,6 +35,7 @@ void BBUART_init();
  *           If 0, previous trasmit has not ended and the attempt is aborted.
 */
 uint8_t BBUART_tx(char character);
+
 /** @brief Transmits the given null-terminated string.
  * 
  *  Note that this is a blocking operation that returns when the entire

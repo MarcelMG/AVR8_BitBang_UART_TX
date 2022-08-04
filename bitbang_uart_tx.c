@@ -42,8 +42,9 @@ void BBUART_init(){
 // Interrupt handler for timer2 (on Atmega8) compare
 ISR(TIMER2_COMP_vect)
 {
+   uint16_t local_tx_shift_reg = tx_shift_reg;
    //output LSB of the TX shift register at the TX pin
-   if( tx_shift_reg & 0x01 )
+   if( local_tx_shift_reg & 0x01 )
    {
       BBUART_TX_PORT |= (1<<BBUART_TX_PIN);
    }
@@ -52,10 +53,11 @@ ISR(TIMER2_COMP_vect)
       BBUART_TX_PORT &=~ (1<<BBUART_TX_PIN);
    }
    //shift the TX shift register one bit to the right
-   tx_shift_reg = (tx_shift_reg >> 1);
+   local_tx_shift_reg >>= 1;
+   tx_shift_reg = local_tx_shift_reg;
    //if the stop bit has been sent, the shift register will be 0
    //and the transmission is completed, so we can stop & reset timer
-   if(!tx_shift_reg)
+   if(!local_tx_shift_reg)
    {
       TCCR2 = 0;
       TCNT2 = 0;
@@ -64,14 +66,15 @@ ISR(TIMER2_COMP_vect)
 
 uint8_t BBUART_tx(char character)
 {
-   // If sending the previous character is not yet finished, return
-   //  (transmission is finished when tx_shift_reg == 0)
-   if(tx_shift_reg){return 0;}
-   //fill the TX shift register witch the character to be sent and the start & stop bits
-   tx_shift_reg = (character<<1);
-   tx_shift_reg &= ~(1<<0); //start bit
-   tx_shift_reg |= (1<<9); //stop bit
-   //start timer with a prescaler of 8
+   uint16_t local_tx_shift_reg = tx_shift_reg;
+   //if sending the previous character is not yet finished, return
+   // (transmission is finished when tx_shift_reg == 0)
+   if(local_tx_shift_reg){return 0;}
+   //fill the TX shift register witch the character to be sent
+   // and the start & stop bits (start bit (1<<0) is already 0)
+   local_tx_shift_reg = (character<<1) | (1<<9); //stop bit (1<<9)
+   tx_shift_reg = local_tx_shift_reg;
+   //start the timer with a prescaler of 8
    TCCR2 = (1<<CS21)|(1<<WGM21);
    return 1;
 }

@@ -1,7 +1,7 @@
-Fork of Software ("bit-bang") UART Transmitter (  8 data bits, 1 stop bit, no parity ) for Attiny24A
+Fork of Software ("bit-bang") UART Transmitter (  8 data bits, 1 stop bit, no parity ) for Attiny24A.
+
 This fork is indended for Atmega8a as it is found on USBASP programmer (12 MHz clock).
 The modifications are related to timing and use of timer2 instead of timer0.
-
 In addition the code in this fork is reorganized to be #included from separate file and some documentation added.
 
 the Baud rate is calculated as follows:

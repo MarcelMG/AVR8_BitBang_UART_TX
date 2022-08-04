@@ -6,4 +6,4 @@ flash: all
 	avrdude -v -p t24 -c usbasp -U main.hex
 
 clean:
-	-rm main.elf main.hex
+	rm main.elf main.hex
